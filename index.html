@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Myco Zennaro | Progetti</title>
+    <title>Myco Zennaro | Projects</title>
     <style>
         * {
             box-sizing: border-box;
@@ -14,7 +14,6 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             min-height: 100vh;
-            /* Sfondo animato fluido: viola, rosso, blu e accento giallo */
             background: linear-gradient(-45deg, #4A00E0, #D31027, #0B192C, #F2C94C);
             background-size: 300% 300%;
             animation: gradientBG 18s ease infinite;
@@ -59,12 +58,10 @@
             flex: 1;
         }
 
-        /* Effetto Glassmorphism Premium */
         .glass-card {
             background: rgba(255, 255, 255, 0.07);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            /* Riflesso luce sul bordo per un vero effetto vetro */
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-top: 1px solid rgba(255, 255, 255, 0.3);
             border-left: 1px solid rgba(255, 255, 255, 0.3);
@@ -104,7 +101,6 @@
             font-weight: 400;
         }
 
-        /* Footer Isola Fluttuante */
         footer {
             position: fixed;
             bottom: 1.5rem;
@@ -135,18 +131,19 @@
             font-size: 1.2rem;
             grid-column: 1 / -1;
             opacity: 0.8;
+            padding: 2rem;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>I Miei Progetti</h1>
-        <p class="subtitle">Seleziona una card per esplorare il progetto</p>
+        <h1>My Projects</h1>
+        <p class="subtitle">Select a card to explore the project</p>
     </header>
 
     <div id="repos-grid">
-        <div class="loader">Caricamento in corso...</div>
+        <div class="loader">Loading projects...</div>
     </div>
 
     <footer>
@@ -162,21 +159,65 @@
             try {
                 const response = await fetch(`https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=100`);
                 
-                if (!response.ok) throw new Error('Network response was not ok');
+                if (!response.ok) {
+                    if (response.status === 403 || response.status === 429) {
+                        throw new Error('GitHub API rate limit exceeded. Please try again later.');
+                    }
+                    throw new Error('Network response was not ok');
+                }
                 
                 const repos = await response.json();
+                
+                if (!Array.isArray(repos)) {
+                    throw new Error('Invalid data format received.');
+                }
+
                 grid.innerHTML = ''; 
 
                 const hideForks = true;
                 
-                // Filtra i fork e nasconde la repository stessa del sito per evitare doppioni
-                const filteredRepos = repos.filter(repo => {
-                    const isNotFork = hideForks ? !repo.fork : true;
-                    const isNotSelf = repo.name.toLowerCase() !== `${githubUsername}.github.io`.toLowerCase();
-                    return isNotFork && isNotSelf;
-                });
+                const filteredRepos = repos.filter(repo => hideForks ? !repo.fork : true);
+
+                if (filteredRepos.length === 0) {
+                    grid.innerHTML = '<div class="loader">No public repositories found.</div>';
+                    return;
+                }
 
                 filteredRepos.forEach(repo => {
                     const card = document.createElement('a');
                     card.className = 'glass-card';
-                    card.target = '_blank
+                    card.target = '_blank';
+                    
+                    const isSelfRepo = repo.name.toLowerCase() === `${githubUsername}.github.io`.toLowerCase();
+
+                    if (isSelfRepo) {
+                        card.href = repo.html_url;
+                    } else if (repo.homepage && repo.homepage.trim() !== "") {
+                        card.href = repo.homepage.startsWith('http') ? repo.homepage : `https://${repo.homepage}`;
+                    } else if (repo.has_pages) {
+                        card.href = `https://${githubUsername}.github.io/${repo.name}`;
+                    } else {
+                        card.href = repo.html_url;
+                    }
+                    
+                    const description = repo.description || 'No description available.';
+
+                    card.innerHTML = `
+                        <div class="repo-name">${repo.name}</div>
+                        <div class="repo-desc">${description}</div>
+                    `;
+                    
+                    grid.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                // Mostra a schermo il tipo di errore esatto (es. blocco per troppe richieste)
+                grid.innerHTML = `<div class="loader">Unable to load projects.<br><span style="font-size: 0.9rem; opacity: 0.7; display: block; margin-top: 10px;">Error: ${error.message}</span></div>`;
+            }
+        }
+
+        loadRepositories();
+    </script>
+</body>
+</html>
