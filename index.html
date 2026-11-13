@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Myco Zennaro | GitHub Repositories</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            /* Sfondo animato per far risaltare l'effetto vetro */
+            background: linear-gradient(-45deg, #1f1c2c, #928dab, #2c3e50, #3498db);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 3rem 1.5rem;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-weight: 700;
+            font-size: 2.5rem;
+            letter-spacing: -0.5px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        p.subtitle {
+            opacity: 0.8;
+            margin-top: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        #repos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1200px;
+            flex: 1;
+        }
+
+        /* Effetto Glassmorphism */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .repo-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            word-break: break-word;
+        }
+
+        .repo-desc {
+            font-size: 0.95rem;
+            opacity: 0.75;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .repo-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            opacity: 0.9;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        /* Footer personalizzato con Glassmorphism */
+        footer {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    font-size: 0.85rem;
+    opacity: 0.85;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+footer:hover {
+    opacity: 1;
+    transform: scale(1.02);
+}
+        
+        .loader {
+            text-align: center;
+            width: 100%;
+            font-size: 1.2rem;
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>I Miei Progetti</h1>
+        <p class="subtitle">Seleziona una repository per esplorare il codice</p>
+    </header>
+
+    <div id="repos-grid">
+        <div class="loader">Caricamento delle repository in corso...</div>
+    </div>
+
+    <footer>
+        &copy; 2026 Myco Zennaro - All rights reserved.
+    </footer>
+
+    <script>
+        // INSERISCI QUI IL TUO NOME UTENTE GITHUB
+        const githubUsername = 'mycozen';
+
+        async function loadRepositories() {
+            const grid = document.getElementById('repos-grid');
+            
+            try {
+                // Richiede le repository ordinandole per data di aggiornamento
+                const response = await fetch(`https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=100`);
+                
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                const repos = await response.json();
+                grid.innerHTML = ''; // Rimuove il loader
+
+                // Filtra le repo se vuoi nascondere i fork (opzionale: cambia in false per includerli)
+                const hideForks = true;
+                const filteredRepos = hideForks ? repos.filter(repo => !repo.fork) : repos;
+
+                filteredRepos.forEach(repo => {
+                    const card = document.createElement('a');
+                    card.className = 'glass-card';
+                    card.href = repo.html_url;
+                    card.target = '_blank'; // Apre in una nuova scheda
+                    
+                    const description = repo.description || 'Nessuna descrizione disponibile per questa repository.';
+                    const language = repo.language || 'Markdown/Vari';
+
+                    card.innerHTML = `
+                        <div class="repo-name">${repo.name}</div>
+                        <div class="repo-desc">${description}</div>
+                        <div class="repo-meta">
+                            <span class="meta-item">💻 ${language}</span>
+                            <span class="meta-item">⭐ ${repo.stargazers_count}</span>
+                            <span class="meta-item">🔄 ${new Date(repo.updated_at).toLocaleDateString('it-IT')}</span>
+                        </div>
+                    `;
+                    
+                    grid.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error('Errore nel recupero dati:', error);
+                grid.innerHTML = '<div class="loader">Impossibile caricare le repository. Verifica l\'username GitHub.</div>';
+            }
+        }
+
+        // Avvia la funzione al caricamento della pagina
+        loadRepositories();
+    </script>
+</body>
+</html>
