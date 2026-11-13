@@ -71,14 +71,28 @@
             line-height: 1.5;
         }
 
-        /* Sezione in evidenza (2 colonne larghe quanto 3 normali) */
+        /* Sezione in evidenza (2 colonne) */
         .special-links-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 2rem; /* Stesso gap della griglia sottostante */
+            gap: 2rem;
             width: 100%;
-            max-width: 1200px; /* Stessa larghezza massima della griglia sottostante */
-            margin-bottom: 2rem; /* Distanza tra questa riga e i progetti GitHub */
+            max-width: 1200px;
+            margin-bottom: 5rem; /* Aumentata la distanza dai progetti */
+            position: relative;
+        }
+
+        /* Divisore orizzontale elegante per separare le due sezioni */
+        .special-links-container::after {
+            content: '';
+            position: absolute;
+            bottom: -2.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 2px;
         }
 
         @media (max-width: 768px) {
@@ -87,7 +101,7 @@
             }
         }
 
-        /* Griglia automatica di GitHub (massimo 3 colonne da 320px su 1200px) */
+        /* Griglia automatica di GitHub */
         #repos-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -124,17 +138,30 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
+        /* Stile specifico per le card speciali (più basse e di colore scuro) */
         .special-card {
-            background: rgba(255, 255, 255, 0.15);
-            border-top: 1px solid rgba(255, 255, 255, 0.6);
-            border-left: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.25); /* Vetro scuro per contrasto */
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            border-left: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 1.25rem 1.5rem; /* Padding ridotto per diminuire l'altezza */
         }
 
         .special-card:hover {
-            background: rgba(255, 255, 255, 0.22);
-            border-top: 1px solid rgba(255, 255, 255, 0.8);
-            border-left: 1px solid rgba(255, 255, 255, 0.8);
+            background: rgba(0, 0, 0, 0.4);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Tipografia ridimensionata per le card speciali */
+        .special-card .repo-name {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .special-card .repo-desc {
+            font-size: 0.95rem;
+            line-height: 1.4;
         }
 
         .repo-name {
@@ -192,7 +219,6 @@
     <header>
         <div class="user-badge">Myco Zennaro</div>
         <h1>Digital Workspace</h1>
-        <!-- Sottotitolo aggiornato per includere risorse accademiche -->
         <p class="subtitle">A curated collection of my projects, academic resources, and code explorations</p>
     </header>
 
