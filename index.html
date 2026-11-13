@@ -14,10 +14,8 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             min-height: 100vh;
-            /* Palette coerente: rosso cremisi, viola scuro, magenta e borgogna */
             background: linear-gradient(-45deg, #1c002b, #8b005d, #D31027, #2b0052);
             background-size: 400% 400%;
-            /* Animazione rallentata a 30s per un flusso più morbido */
             animation: gradientBG 30s ease infinite;
             color: #ffffff;
             display: flex;
@@ -34,13 +32,12 @@
 
         header {
             text-align: center;
-            margin-bottom: 4.5rem;
+            margin-bottom: 3.5rem;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* Nuova badge sopra il titolo */
         .user-badge {
             display: inline-block;
             padding: 0.5rem 1.5rem;
@@ -70,10 +67,27 @@
             opacity: 0.85;
             font-size: 1.25rem;
             font-weight: 300;
-            max-width: 600px;
+            max-width: 650px;
             line-height: 1.5;
         }
 
+        /* Sezione in evidenza (2 colonne larghe quanto 3 normali) */
+        .special-links-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem; /* Stesso gap della griglia sottostante */
+            width: 100%;
+            max-width: 1200px; /* Stessa larghezza massima della griglia sottostante */
+            margin-bottom: 2rem; /* Distanza tra questa riga e i progetti GitHub */
+        }
+
+        @media (max-width: 768px) {
+            .special-links-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Griglia automatica di GitHub (massimo 3 colonne da 320px su 1200px) */
         #repos-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -108,6 +122,19 @@
             border-top: 1px solid rgba(255, 255, 255, 0.5);
             border-left: 1px solid rgba(255, 255, 255, 0.5);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .special-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-top: 1px solid rgba(255, 255, 255, 0.6);
+            border-left: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .special-card:hover {
+            background: rgba(255, 255, 255, 0.22);
+            border-top: 1px solid rgba(255, 255, 255, 0.8);
+            border-left: 1px solid rgba(255, 255, 255, 0.8);
         }
 
         .repo-name {
@@ -165,11 +192,23 @@
     <header>
         <div class="user-badge">Myco Zennaro</div>
         <h1>Digital Workspace</h1>
-        <p class="subtitle">A curated collection of my repositories, scripts, and code explorations</p>
+        <!-- Sottotitolo aggiornato per includere risorse accademiche -->
+        <p class="subtitle">A curated collection of my projects, academic resources, and code explorations</p>
     </header>
 
+    <div class="special-links-container">
+        <a href="https://unipdit-my.sharepoint.com/:f:/g/personal/lorenzo_fanfani_studenti_unipd_it/EnELK9gA6yZAtuoG5MUGB68BWNjzY2o8RY-b2ZkeXG7-YQ?e=2621JF" target="_blank" class="glass-card special-card">
+            <div class="repo-name">Physics BSc Drive</div>
+            <div class="repo-desc">Shared academic materials, notes, and resources for the Bachelor's Degree in Physics.</div>
+        </a>
+        <a href="https://goldshish.it/courses/" target="_blank" class="glass-card special-card">
+            <div class="repo-name">Goldshish Courses</div>
+            <div class="repo-desc">Access external courses, guides, and supplementary materials.</div>
+        </a>
+    </div>
+
     <div id="repos-grid">
-        <div class="loader">Loading repositories...</div>
+        <div class="loader">Loading projects...</div>
     </div>
 
     <footer>
